@@ -103,7 +103,7 @@ namespace webX {
                     // 注意：read_buffer->size() 的大小并一定和 bytes_transferred 相等， Boost 的文档中指出：
                     // 在 async_read_until 操作成功后,  streambuf 在界定符之外可能包含一些额外的的数据
                     // 所以较好的做法是直接从流中提取并解析当前 read_buffer 左边的报头, 再拼接 async_read 后面的内容
-                    size_t total = read_buffer->size();
+                    size_t total = read_buffer->size();//获得原始指针
 
                     // 转换到 istream 来提取 string-lines
                     std::istream stream(read_buffer.get());
@@ -117,7 +117,7 @@ namespace webX {
                     // 如果满足，同样读取
                     if(request->header.count("Content-Length")>0) {
                         boost::asio::async_read(*socket, *read_buffer,
-                        boost::asio::transfer_exactly(stoull(request->header["Content-Length"]) - num_additional_bytes),
+                          boost::asio::transfer_exactly(stoull(request->header["Content-Length"]) - num_additional_bytes),
                         [this, socket, read_buffer, request](const boost::system::error_code& ec, size_t bytes_transferred) {
                             if(!ec) {
                                 // 将指针作为 istream 对象存储到 read_buffer 中
@@ -136,7 +136,7 @@ namespace webX {
         Request parse_request(std::istream& stream) const {
             Request request;
 
-            std::regex e("^([^ ]*) ([^ ]*) HTTP/([^ ]*)$");
+            std::regex e("^([^ ]*) ([^ ]*) HTTP/([^ ]*)$");//[^ ]除了空格外的其他任意字符
 
             std::smatch sub_match;
 
